@@ -34,26 +34,21 @@ def get_users(db:session, skip:int = 0, limit: int = 100):
 def create_user(db: session, username: str, password: str):
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode('utf-8'), salt) #[:50]
-    db_user = models.User(username = username, password = hashed)
+    db_user = models.User(username = username, password = hashed.decode('utf-8'))
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
 def verify_password(plain_password, hashed_password):
-    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password)
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def authenticate_user(db: session, username: str, password: str):
     user = get_us_username(db, username)
-    print(1)
     if not user:
-        print(2)
         return False
-    print(3)
     if not verify_password(password, user.password):
-        print(4)
         return False
-    print(5)
     return user
 
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
