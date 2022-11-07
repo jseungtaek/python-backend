@@ -53,7 +53,7 @@ async def form_data_check(form_data: OAuth2PasswordRequestForm = Depends(), db: 
     # type(access_token_expires)
     # print(access_token_expires)
     access_token_expires = timedelta(minutes=schemas.Key.ACCESS_TOKEN_EXPIRE_MINUTES)
-    ac_token = crud.create_access_token(data={"sub": form_data.username})  # , expires_delta=access_token_expires)
+    ac_token = crud.create_access_token(data={"sub": form_data.username}, expires_delta=access_token_expires)
     print(ac_token)
     return {'ac_token': ac_token}
 
@@ -73,7 +73,7 @@ def check_user(username: str, db: Session = Depends(get_db)):
     return check_us
 
 
-@app.post("/token/", response_model=schemas.UserBase)
+@app.post("/token", response_model=schemas.Token)
 async def check_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = crud.authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -110,15 +110,11 @@ async def get_current_user(token: str = Depends(crud.oauth2_scheme), db: Session
 
 
 async def get_current_active_user(current_user: schemas.UserBase = Depends(get_current_user)):
-    print(2)
     if current_user.disabled:
-        print(3)
         raise HTTPException(status_code=400, detail="Inactive user")
-    print(4)
     return current_user
 
 
 @app.get("/users/me", response_model=schemas.UserBase)
 async def read_users_me(current_user: schemas.UserBase = Depends(get_current_active_user)):
-    print(1)
     return current_user

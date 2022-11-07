@@ -56,13 +56,12 @@ def authenticate_user(db: session, username: str, password: str):
     return user
 
 
-def create_access_token(data: dict):  # ,expires_delta: Union[timedelta, None] = None):
+def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
     to_encode = data.copy()
-    print("to_encode", to_encode)
-    # if expires_delta:
-    #     expire = datetime.utcnow() + expires_delta
-    # else:
-    expire = datetime.utcnow() + timedelta(minutes=15)
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, schemas.Key.SECRET_KEY, schemas.Key.ALGORITHM)
     return encoded_jwt
