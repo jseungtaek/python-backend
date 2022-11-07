@@ -27,12 +27,6 @@ def get_us_username(db: session, username: str):
 def get_users(db: session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
-
-# def get_user_check(db: session, username:str):
-#     # if username in db:
-#     #     user_dict = db[username]
-#     #     return schemas.UserInDB(**user_dict)
-
 def create_user(db: session, username: str, password: str):
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode('utf-8'), salt)

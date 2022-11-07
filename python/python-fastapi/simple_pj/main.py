@@ -45,19 +45,6 @@ def check_user(username: str, password: str, db: Session = Depends(get_db)):
     db_us = crud.authenticate_user(db, username, password)
     return db_us
 
-
-@app.post("/users/test/")
-async def form_data_check(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = crud.authenticate_user(db, form_data.username, form_data.password)
-    # access_token_expires = timedelta(minutes=schemas.Key.ACCESS_TOKEN_EXPIRE_MINUTES)
-    # type(access_token_expires)
-    # print(access_token_expires)
-    access_token_expires = timedelta(minutes=schemas.Key.ACCESS_TOKEN_EXPIRE_MINUTES)
-    ac_token = crud.create_access_token(data={"sub": form_data.username}, expires_delta=access_token_expires)
-    print(ac_token)
-    return {'ac_token': ac_token}
-
-
 @app.post("/users/{username, password}", response_model=schemas.UserBase)
 def create_user(username: str, password: str, db: Session = Depends(get_db)):
     db_user = crud.get_us_username(db, username)
@@ -88,14 +75,10 @@ async def check_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Sessi
 
 
 async def get_current_user(token: str = Depends(crud.oauth2_scheme), db: Session = Depends(get_db)):
-    print(5)
     credential_exception = HTTPException(
-        print(6),
         status_code=401
     )
-    print(7)
     try:
-        print(8)
         payload = jwt.decode(token, schemas.Key.SECRET_KEY, schemas.Key.ALGORITHM)
         username: str = payload.get("sub")
         if username is None:
