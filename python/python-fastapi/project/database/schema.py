@@ -1,11 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
+import os
+from dotenv import load_dotenv
 
-user_name = "root"
-user_pwd = ""
-db_host = "127.0.0.1"
-db_name = "testdb"
+
+load_dotenv()
+
+user_name = os.environ['user_name']
+user_pwd = os.environ['user_pwd']
+db_host = os.environ['db_host']
+db_name = os.environ['db_name']
 
 DATABASE = 'mysql://%s:%s@%s/%s?charset=utf8' % (
     user_name,
