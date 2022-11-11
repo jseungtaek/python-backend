@@ -28,4 +28,8 @@ class TokenData(BaseModel):
 
 
 class UserInDB(UserBase):
-    hashed_password: str
+    password: str
+
+
+class UserInfo(BaseModel):
+    username: str
